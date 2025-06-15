@@ -6,6 +6,7 @@
 using namespace std;
 
 class Filme{
+public:
     string tconst;
     string titleType;
     string primaryTitle;	
