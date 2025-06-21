@@ -23,16 +23,24 @@ public:
 
     // local para a função de leitura
 
+    bool contemTipo(const vector<string>& tipos) const{
+        for (const string& tipo: tipos) {
+            if(titleType == tipo)
+                return true;
+        }
+        return false;
+    }
+
     bool contemGenero(const string &genero) const {
-        for (const auto &g : genres)
+        for (const string& g : genres)
             if (g == genero)
                 return true;
         return false;
     }
 
     bool contemAlgumGenero(const vector<string> &listaGeneros) const {
-        for (const auto &g : genres)
-            for (const auto &alvo : listaGeneros)
+        for (const string& g : genres)
+            for (const string& alvo : listaGeneros)
                 if (g == alvo)
                     return true;
         return false;

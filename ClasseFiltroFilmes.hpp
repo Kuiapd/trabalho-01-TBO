@@ -5,23 +5,43 @@ using namespace std;
 
 class FiltroFilmes {
 
-    bool filtroGenero(const Filme &filme, vector<string> &generosBuscados) {
-        return filme.contemAlgumGenero(generosBuscados);
-    }
-
-    bool filtroDuracao(const Filme &filme, int minDuracao, int maxDuracao) {
-        return filme.estaNoIntervaloDeDuracao(minDuracao, maxDuracao);
-    }
-
-    bool filtroTipo(const Filme &filme, vector<string> &tiposBuscados) {
-        for (const auto &tipos : tiposBuscados) {
-            if (filme.titleType == tipos)
-                return true;
+    void filtroGenero(vector<Filme> &filmes, vector<string> &generosBuscados) {
+        vector<Filme> filtrados;
+        for(const Filme& f : filmes) {
+            if(f.contemAlgumGenero(generosBuscados)) {
+                filtrados.push_back(f);
+            }
         }
-        return false;
+        filmes = filtrados;
     }
 
-    bool filtroAno(const Filme &filme, int anoMin, int anoMax) {
-        return filme.estaNoIntervaloDeAnos(anoMin, anoMax);
+    void filtroDuracao(vector<Filme> &filmes, int minDuracao, int maxDuracao) {
+        vector<Filme> filtrados;
+        for(const Filme& f : filmes) {
+            if(f.estaNoIntervaloDeDuracao(minDuracao, maxDuracao)) {
+                filtrados.push_back(f);
+            }
+        }
+        filmes = filtrados;
+    }
+
+    void filtroTipo(vector<Filme> &filmes, vector<string> &tiposBuscados) {
+        vector<Filme> filtrados;
+        for(const Filme& f : filmes) {
+            if(f.contemTipo(tiposBuscados)) {
+                filtrados.push_back(f);
+            }
+        }
+        filmes = filtrados;
+    }
+
+    void filtroAno(vector<Filme> &filmes, int anoMin, int anoMax) {
+        vector<Filme> filtrados;
+        for(const Filme& f : filmes) {
+            if(f.estaNoIntervaloDeAnos(anoMin, anoMax)) {
+                filtrados.push_back(f);
+            }
+        }
+        filmes = filtrados;
     }
 };
