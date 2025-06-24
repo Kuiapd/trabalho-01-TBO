@@ -5,6 +5,8 @@
 #include <sstream>
 #include "Filme.hpp"
 #include "Cinema.h"
+#include "FiltroCinemas.hpp"
+#include "ClasseFiltroFilmes.hpp"
 using namespace std;
 
 class Filtro
@@ -12,280 +14,154 @@ class Filtro
 public:
     vector<Cinema> listaDeCinema;
     vector<Filme> listaDeFilme;
-
-    void filtroGenero(vector<Filme> &filmes, vector<string> &generosBuscados)
-    {
-
-        for (const Filme &f : filmes)
-        {
-            if (f.contemAlgumGenero(generosBuscados))
-            {
-                listaDeFilme.push_back(f);
-            }
-        }
+    FiltroCinemas filtroCinema;
+    FiltroFilmes filtroFilme;
+   
+    Filtro(vector<Filme> &filmes,vector<Cinema> &cinemas){
+        listaDeCinema.reserve(cinemas.size());
+        listaDeFilme.reserve(filmes.size());
+        listaDeCinema=cinemas;
+        listaDeFilme=filmes;
     }
+   
 
-    void filtroDuracao(vector<Filme> &filmes, int minDuracao, int maxDuracao)
-    {
-        for (const Filme &f : filmes)
-        {
-            if (f.estaNoIntervaloDeDuracao(minDuracao, maxDuracao))
-            {
-                listaDeFilme.push_back(f);
-            }
-        }
-    }
-
-    void filtroTipo(vector<Filme> &filmes, vector<string> &tiposBuscados)
-    {
-        for (const Filme &f : filmes)
-        {
-            if (f.contemTipo(tiposBuscados))
-            {
-                listaDeFilme.push_back(f);
-            }
-        }
-    }
-
-    void filtroAno(vector<Filme> &filmes, int anoMin, int anoMax)
-    {
-        for (const Filme &f : filmes)
-        {
-            if (f.estaNoIntervaloDeAnos(anoMin, anoMax))
-            {
-                listaDeFilme.push_back(f);
-            }
-        }
-    }
-
-    void filtrarFilmeCinema(const string parse, vector<Filme> &filmes)
-    {
-        bool ptf = false; // Primeiro tipo de Filtro já foi utilizado
+    void filtrarFilmeCinema(const string parse, vector<Filme> &filmes, vector<Cinema> &cinemas) {
+        //bool ptf = false; // Primeiro tipo de Filtro já foi utilizado
         stringstream ssparse(parse);
-        // Identificador prefixo
         string prefixo;
         getline(ssparse, prefixo, '-');
 
-        // Resto do parse
         string filtros;
         getline(ssparse, filtros);
         stringstream filtroComp(filtros);
         string blocoAnd;
-        int primeirof = 0;
 
-        // Quebra cada filtro por &
-        while (getline(filtroComp, blocoAnd, '&'))
-        {
-            // Remover espaços
+        while (getline(filtroComp, blocoAnd, '&')) {
             blocoAnd.erase(0, blocoAnd.find_first_not_of(" \t"));
             blocoAnd.erase(blocoAnd.find_last_not_of(" \t") + 1);
 
-            if (blocoAnd.empty())
-                continue;
+            if (blocoAnd.empty()) continue;
 
-            // Extrair tipo e valores
             size_t abre = blocoAnd.find("(#");
             size_t igual = blocoAnd.find('=');
             size_t fecha = blocoAnd.find(')', igual);
 
-            if (abre == npos || igual == npos || fecha == npos)
-            {
+            if (abre == string::npos || igual == string::npos || fecha == string::npos) {
                 cout << "Filtro inválido: " << blocoAnd << endl;
                 continue;
             }
 
             string tipo = blocoAnd.substr(abre + 2, igual - (abre + 2));
             string valores = blocoAnd.substr(igual + 1, fecha - (igual + 1));
-
             stringstream ssvalores(valores);
 
-            if (prefixo == "f")
-            {
-                if (tipo == "a")
-                {
+            // FILTROS PARA FILME 
+            if (prefixo == "f") {
+                if (tipo == "a") { // ano
                     string val;
                     int a_min, a_max;
                     getline(ssvalores, val, ',');
                     a_min = stoi(val);
-                    if (getline(ssvalores, val, ','))
-                    {
+                    if (getline(ssvalores, val, ',')) {
                         a_max = stoi(val);
-                    }
-                    else
-                    {
+                    } else {
                         a_max = a_min;
                     }
-                    filtroAno(filmes, a_min, a_max);
+                    filtroFilme.filtroAno(filmes, a_min, a_max);
                 }
-                else if (tipo == "t")
-                {
+                else if (tipo == "t") { // tipo
                     string val;
                     vector<string> tipos;
-                    while (getline(ssvalores, val, '|'))
-                    {
+                    while (getline(ssvalores, val, '|')) {
                         tipos.push_back(val);
                     }
-                    if (!ptf)
-                    {
-                        filtroTipo(tipos, filmes);
-                    }
-                    else
-                    {
-                        vector<Filme> copy = listaDefilme;
-                        listaDefilme.clear();
-                        filtroTipo(tipos, copy);
-                    }
+                    filtroFilme.filtroTipo(filmes, tipos);
                 }
-                else if (tipo == "g")
-                {
+                else if (tipo == "g") { // gênero
                     string val;
                     vector<string> generos;
-                    while (getline(ssvalores, val, '|'))
-                    {
+                    while (getline(ssvalores, val, '|')) {
                         generos.push_back(val);
                     }
-                    if (!ptf)
-                    {
-                        filtroGenero(filmes, generos);
-                    }
-                    else
-                    {
-                        vector<Filme> copy = listaDefilme;
-                        listaDefilme.clear();
-                        filtroGenero(copy, generos);
-                    }
+                    filtroFilme.filtroGenero(filmes, generos);
                 }
-                else if (tipo == "d")
-                {
+                else if (tipo == "d") { // duração
                     string val;
                     int d_min, d_max;
                     getline(ssvalores, val, ',');
                     d_min = stoi(val);
-                    if (getline(ssvalores, val, ','))
-                    {
+                    if (getline(ssvalores, val, ',')) {
                         d_max = stoi(val);
-                    }
-                    else
-                    {
+                    } else {
                         d_max = d_min;
                     }
-                    if (!ptf)
-                    {
-                        filtroDuracao(filmes, d_min, d_max);
-                    }
-                    else
-                    {
-                        vector<Filme> copy = listaDefilme;
-                        listaDefilme.clear();
-                        filtroDuracao(copy, d_min, d_max);
-                    }
+                    filtroFilme.filtroDuracao(filmes, d_min, d_max);
                 }
-                ptf = listaDeFilme.size() > 0;
             }
-            else if (prefixo == "c")
-            { // filtro cinema
-                            if (tipo == "a") { // ano
-                string val;
-                int a_min, a_max;
-                getline(ssvalores, val, ',');
-                a_min = stoi(val);
-                if (getline(ssvalores, val, ',')) {
-                    a_max = stoi(val);
-                } else {
-                    a_max = a_min;
+
+            //  FILTROS PARA CINEMA
+            else if (prefixo == "c") {
+                if (tipo == "a") { // ano do filme no cinema
+                    string val;
+                    int a_min, a_max;
+                    getline(ssvalores, val, ',');
+                    a_min = stoi(val);
+                    if (getline(ssvalores, val, ',')) {
+                        a_max = stoi(val);
+                    } else {
+                        a_max = a_min;
+                    }
+                    filtroCinema.filtroCinemasPorAnoFilme(cinemas, a_min, a_max);
                 }
-                /*
-                if (!ptf) {
-                    filtroAnoCinema(cinemas, a_min, a_max);
-                } else {
-                    vector<Cinema> copy = listaDeCinema;
-                    listaDeCinema.clear();
-                    filtroAnoCinema(copy, a_min, a_max);
-                }*/
-            } else if (tipo == "t") { // tipo de título
-                string val;
-                vector<string> tipos;
-                while (getline(ssvalores, val, '|')) {
-                    tipos.push_back(val);
+                else if (tipo == "t") { // tipo de título no cinema
+                    string val;
+                    vector<string> tipos;
+                    while (getline(ssvalores, val, '|')) {
+                        tipos.push_back(val);
+                    }
+                    filtroCinema.filtroCinemasPorTipoFilme(cinemas, tipos);
                 }
-                /*
-                if (!ptf) {
-                    filtroTipoCinema(cinemas, tipos);
-                } else {
-                    vector<Cinema> copy = listaDeCinema;
-                    listaDeCinema.clear();
-                    filtroTipoCinema(copy, tipos);
-                }*/
-            } else if (tipo == "g") { // gêneros
-                string val;
-                vector<string> generos;
-                while (getline(ssvalores, val, '|')) {
-                    generos.push_back(val);
+                else if (tipo == "g") { // gênero no cinema
+                    string val;
+                    vector<string> generos;
+                    while (getline(ssvalores, val, '|')) {
+                        generos.push_back(val);
+                    }
+                    filtroCinema.filtroCinemasPorGeneroFilme(cinemas, generos);
                 }
-                /*
-                if (!ptf) {
-                    filtroGeneroCinema(cinemas, generos);
-                } else {
-                    vector<Cinema> copy = listaDeCinema;
-                    listaDeCinema.clear();
-                    filtroGeneroCinema(copy, generos);
+                else if (tipo == "d") { // duração dos filmes no cinema
+                    string val;
+                    int d_min, d_max;
+                    getline(ssvalores, val, ',');
+                    d_min = stoi(val);
+                    if (getline(ssvalores, val, ',')) {
+                        d_max = stoi(val);
+                    } else {
+                        d_max = d_min;
+                    }
+                    filtroCinema.filtroCinemasPorDuracaoFilme(cinemas, d_min, d_max);
                 }
-                */
-            } else if (tipo == "d") { // duração
-                string val;
-                int d_min, d_max;
-                getline(ssvalores, val, ',');
-                d_min = stoi(val);
-                if (getline(ssvalores, val, ',')) {
-                    d_max = stoi(val);
-                } else {
-                    d_max = d_min;
+                else if (tipo == "r") { // raio (localização)
+                    string val;
+                    int x, y;
+                    double raio;
+                    getline(ssvalores, val, ',');
+                    y = stoi(val);
+                    getline(ssvalores, val, ',');
+                    x = stoi(val);
+                    getline(ssvalores, val);
+                    raio = stod(val);
+                    filtroCinema.filtroCinemasPorLocalizacao(cinemas, x, y, raio);
                 }
-                
-                /*
-                if (!ptf) {
-                    filtroDuracaoCinema(cinemas, d_min, d_max);
-                } else {
-                    vector<Cinema> copy = listaDeCinema;
-                    listaDeCinema.clear();
-                    filtroDuracaoCinema(copy, d_min, d_max);
+                else if (tipo == "v") { // valor do ingresso
+                    string val;
+                    double precoMax;
+                    getline(ssvalores, val);
+                    precoMax = stod(val);
+                    filtroCinema.filtroCinemasPorPreco(cinemas, precoMax);
                 }
-                */
-            } else if (tipo == "r") { // raio: y, x, raio
-                string val;
-                double y, x, raio;
-                getline(ssvalores, val, ',');
-                y = stod(val);
-                getline(ssvalores, val, ',');
-                x = stod(val);
-                getline(ssvalores, val);
-                raio = stod(val);
-                /*
-                if (!ptf) {
-                    filtroRaioCinema(cinemas, y, x, raio);
-                } else {
-                    vector<Cinema> copy = listaDeCinema;
-                    listaDeCinema.clear();
-                    filtroRaioCinema(copy, y, x, raio);
-                }
-                */
-            } else if (tipo == "v") { // valor máximo do ingresso
-                string val;
-                double v_max;
-                getline(ssvalores, val);
-                v_max = stod(val);
-                
-                /*
-                if (!ptf) {
-                    filtroValorCinema(cinemas, v_max);
-                } else {
-                    vector<Cinema> copy = listaDeCinema;
-                    listaDeCinema.clear();
-                    filtroValorCinema(copy, v_max);
-                }*/
-            }
-            ptf = listaDeCinema.size() > 0;
             }
         }
     }
+
 };
