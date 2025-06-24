@@ -84,7 +84,26 @@ public:
         cout << "startYear: " << f.startYear << endl;
         cout << "endYear: " << f.endYear << endl;
         cout << "runtimeMinutes: " << f.runtimeMinutes << endl;
-        cout << "genres: " << f.genres << endl;
+        cout << "genres: ";
+        for (size_t i = 0; i < f.genres.size(); ++i)
+        {
+            cout << f.genres[i];
+            if (i != f.genres.size() - 1)
+            {
+                cout << ", ";
+            }
+        }
+        cout << endl;
         cout << "----------------------------" << endl;
     }
+
+    const Filme* BuscaFilmePorTconst(const std::string& tconst) const {
+    for (const Filme& f : filmes) {
+        if (f.tconst == tconst) {
+            return &f;
+        }
+    }
+    return nullptr; // não encontrado
+}
+
 };

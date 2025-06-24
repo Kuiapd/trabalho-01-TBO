@@ -16,7 +16,7 @@ class Cinema{
         int coordenadaX;
         int coordenadaY;
         double precoIngresso;
-        vector<string> filmesEmExibicao;
+        vector<Filme> filmesEmExibicao;
     
 };
 
