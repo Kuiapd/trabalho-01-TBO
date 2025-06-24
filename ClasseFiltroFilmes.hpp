@@ -4,7 +4,7 @@
 using namespace std;
 
 class FiltroFilmes {
-
+public:
     void filtroGenero(vector<Filme> &filmes, vector<string> &generosBuscados) {
         vector<Filme> filtrados;
         for(const Filme& f : filmes) {
