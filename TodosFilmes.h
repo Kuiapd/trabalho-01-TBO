@@ -5,7 +5,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
-#include "Filme.h"
+#include "Filme.hpp"
 
 using namespace std;
 
@@ -48,12 +48,17 @@ public:
             a.originalTitle = originalTitleStr;
             a.isAdult = (isAdultStr == "1");
 
-            // Verificações contra valores inválidos
-            a.startYear = (!startYearStr.empty() && startYearStr != "\\N") ? static_cast<unsigned>(stoi(startYearStr)) : -1;
-            a.endYear = (!endYearStr.empty() && endYearStr != "\\N") ? static_cast<unsigned>(stoi(endYearStr)) : -1;
-            a.runtimeMinutes = (!runtimeMinutesStr.empty() && runtimeMinutesStr != "\\N") ? static_cast<unsigned>(stoi(runtimeMinutesStr)) : -1;
+            a.startYear = (!startYearStr.empty() && startYearStr != "\\N") ? stoi(startYearStr) : -1;
+            a.endYear = (!endYearStr.empty() && endYearStr != "\\N") ? stoi(endYearStr) : -1;
+            a.runtimeMinutes = (!runtimeMinutesStr.empty() && runtimeMinutesStr != "\\N") ? stoi(runtimeMinutesStr) : -1;
 
-            a.genres = genresStr;
+            // Corrigir split dos gêneros
+            istringstream ssGenres(genresStr);
+            string genero;
+            while (getline(ssGenres, genero, ','))
+            {
+                a.genres.push_back(genero);
+            }
 
             filmes.push_back(a);
         }

@@ -12,7 +12,7 @@ class TodosCinemas
 public:
     vector<Cinema> cinemas;
 
-    void criarListaDeCinemasPorArquivo(string &nomeDoArquivo)
+    void criarListaDeCinemasPorArquivo(const string &nomeDoArquivo)
     {
         cinemas.resize(0);
         cinemas.reserve(100);
