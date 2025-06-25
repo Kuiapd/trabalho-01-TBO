@@ -1,5 +1,4 @@
 #pragma once
-//versão funcional
 #include <iostream>
 #include <vector>
 #include <string>
@@ -21,13 +20,11 @@ public:
     FiltroCinemas filtroCinema;
     FiltroFilmes filtroFilme;
 
-    // Construtor recebe listas completas de filmes e cinemas
     Filtro(const TodosFilmes& todosFilmes, const TodosCinemas& todosCinemas) {
         listaDeFilmes = todosFilmes.filmes;
         listaDeCinemas = todosCinemas.cinemas;
     }
 
-    // Aplica filtros aos vetores passados por referência
     void filtrarFilmeCinema(const string& parse, vector<Filme>& filmes, vector<Cinema>& cinemas) {
         stringstream ssparse(parse);
         string prefixo;
@@ -38,13 +35,11 @@ public:
         stringstream filtroComp(filtros);
         string blocoAnd;
 
-        // Variáveis comuns
         bool usaAno = false, usaDuracao = false, usaGenero = false, usaTipo = false;
         int anoMin, anoMax;
         int durMin, durMax;
         vector<string> generosBuscados, tiposBuscados;
 
-        // Variáveis só para cinemas
         bool usaPreco = false, usaLocalizacao = false;
         int x = 0, y = 0;
         double precoMax = 0.0, raio = 0.0;
@@ -112,7 +107,6 @@ public:
             );
         }
         else if (prefixo == "c") {
-            // Primeiro aplicamos os filtros exclusivos de cinema
             if (usaPreco) {
                 filtroCinema.filtroCinemasPorPreco(cinemas, precoMax);
             }
@@ -120,7 +114,6 @@ public:
                 filtroCinema.filtroCinemasPorLocalizacao(cinemas, x, y, raio);
             }
 
-            // Agora aplicamos o filtro completo dos filmes de cada cinema
             filtroCinema.filtrarCinemasComFilmeQueAtendeTodosOsFiltros(
                 cinemas,
                 usaAno, anoMin, anoMax,
