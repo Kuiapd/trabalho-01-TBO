@@ -20,6 +20,7 @@ public:
             {
                 for (const string &tipoDesejado : tiposDesejados)
                 {
+                    // cout<<f.titleType<<"=="<<tipoDesejado<<endl;
                     if (f.titleType == tipoDesejado)
                     {
                         contemTipo = true;
@@ -35,25 +36,28 @@ public:
                 filtrados.push_back(cinema);
             }
         }
-
+        // cout<<filtrados.size();
         cinemas = filtrados;
+        
     }
 
     void filtroCinemasPorGeneroFilme(vector<Cinema> &cinemas, const vector<string> &generosBuscados)
     {
         vector<Cinema> filtrados;
-
         for (const Cinema &cinema : cinemas)
         {
+            // cout<<"Teste1!!"<<endl;
             bool contemGenero = false;
-
+            
             for (const Filme &f : cinema.filmesEmExibicao)
             {
+                // cout<<"Teste2!!"<<endl;
                 // Percorre os gêneros do filme
                 for (const string &generoFilme : f.genres)
                 {
                     for (const string &generoBuscado : generosBuscados)
                     {
+                        // cout<<generoFilme<<"=="<<generoBuscado<<endl;
                         if (generoFilme == generoBuscado)
                         {
                             contemGenero = true;
@@ -101,6 +105,7 @@ public:
         }
 
         cinemas = filtrados;
+        
     }
 
     void filtroCinemasPorLocalizacao(vector<Cinema> &cinemas, int usuarioX, int usuarioY, float raio)

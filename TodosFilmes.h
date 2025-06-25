@@ -19,7 +19,7 @@ public:
         ifstream arquivo(nomeArquivo);
         if (!arquivo.is_open())
         {
-            cout << "Erro ao abrir arquivo de Cinemas!!";
+            cout << "Erro ao abrir arquivo de Filmes!!";
             return;
         }
 

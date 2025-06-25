@@ -6,6 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include "Cinema.h"
+#include "TodosFilmes.h"
 
 class TodosCinemas
 {
@@ -15,7 +16,6 @@ public:
     void criarListaDeCinemasPorArquivo(const string &nomeDoArquivo, const TodosFilmes &todosFilmes)
 {
     cinemas.clear();
-    cinemas.reserve(100);
 
     ifstream arquivo(nomeDoArquivo);
 
@@ -33,7 +33,6 @@ public:
         stringstream ss(linha);
         Cinema c;
         c.filmesEmExibicao.clear();
-        c.filmesEmExibicao.reserve(10);
 
         string valor;
 
@@ -46,21 +45,20 @@ public:
         getline(ss, valor, ',');
         c.precoIngresso = stof(valor);
 
-        // Agora lê todos os tconsts restantes da linha
         while (getline(ss, valor, ','))
         {
-            if (!valor.empty() && valor[0] == ' ')
-                valor = valor.substr(1); // remove espaço à esquerda
+            valor.erase(0, valor.find_first_not_of(" \t"));
+            valor.erase(valor.find_last_not_of(" \t") + 1);
 
             const Filme* filme = todosFilmes.BuscaFilmePorTconst(valor);
             if (filme)
             {
-                c.filmesEmExibicao.push_back(*filme); // copia o objeto Filme
+                c.filmesEmExibicao.push_back(*filme);
             }
-            else
-            {
-                cout << "Filme com tconst '" << valor << "' não encontrado." << endl;
-            }
+            // else
+            // {
+            //     cout << "Filme com tconst '" << valor << "' não encontrado." << endl;
+            // }
         }
 
         cinemas.push_back(c);
