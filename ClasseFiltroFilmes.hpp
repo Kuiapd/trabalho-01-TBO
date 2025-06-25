@@ -5,43 +5,51 @@ using namespace std;
 
 class FiltroFilmes {
 public:
-    void filtroGenero(vector<Filme> &filmes, vector<string> &generosBuscados) {
+    void filtroFilmesComTodosOsFiltros(
+        vector<Filme>& filmes,
+        bool usaAno, int anoMin, int anoMax,
+        bool usaDuracao, int durMin, int durMax,
+        bool usaGenero, const vector<string>& generos,
+        bool usaTipo, const vector<string>& tipos
+    ) {
         vector<Filme> filtrados;
-        for(const Filme& f : filmes) {
-            if(f.contemAlgumGenero(generosBuscados)) {
-                filtrados.push_back(f);
+
+        for (const Filme& f : filmes) {
+            if (usaAno && (f.startYear < anoMin || f.startYear > anoMax))
+                continue;
+
+            if (usaDuracao && (f.runtimeMinutes < durMin || f.runtimeMinutes > durMax))
+                continue;
+
+            if (usaGenero) {
+                bool achouGenero = false;
+                for (const string& g : generos) {
+                    for (const string& fg : f.genres) {
+                        if (fg == g) {
+                            achouGenero = true;
+                            break;
+                        }
+                    }
+                    if (achouGenero) break;
+                }
+                if (!achouGenero) continue;
             }
+
+            if (usaTipo) {
+                bool achouTipo = false;
+                for (const string& t : tipos) {
+                    if (f.titleType == t) {
+                        achouTipo = true;
+                        break;
+                    }
+                }
+                if (!achouTipo) continue;
+            }
+
+            filtrados.push_back(f);
         }
+
         filmes = filtrados;
     }
 
-    void filtroDuracao(vector<Filme> &filmes, int minDuracao, int maxDuracao) {
-        vector<Filme> filtrados;
-        for(const Filme& f : filmes) {
-            if(f.estaNoIntervaloDeDuracao(minDuracao, maxDuracao)) {
-                filtrados.push_back(f);
-            }
-        }
-        filmes = filtrados;
-    }
-
-    void filtroTipo(vector<Filme> &filmes, vector<string> &tiposBuscados) {
-        vector<Filme> filtrados;
-        for(const Filme& f : filmes) {
-            if(f.contemTipo(tiposBuscados)) {
-                filtrados.push_back(f);
-            }
-        }
-        filmes = filtrados;
-    }
-
-    void filtroAno(vector<Filme> &filmes, int anoMin, int anoMax) {
-        vector<Filme> filtrados;
-        for(const Filme& f : filmes) {
-            if(f.estaNoIntervaloDeAnos(anoMin, anoMax)) {
-                filtrados.push_back(f);
-            }
-        }
-        filmes = filtrados;
-    }
 };

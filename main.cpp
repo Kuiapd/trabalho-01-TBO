@@ -12,7 +12,7 @@
 #include "ClasseFiltroFilmes.hpp"
 
 using namespace std;
-
+// versao legal 
 int main(){
     SetConsoleOutputCP(CP_UTF8);
     cout<<"ini_main\n";
@@ -29,15 +29,17 @@ int main(){
     vector<Filme> filmesFiltrados = filtro.listaDeFilmes;
     vector<Cinema> cinemasFiltrados = filtro.listaDeCinemas;
 
-    string filtroString = "c-(#v=10)&(#t=short|tvEpisode)&(#g=Comedy|Drama|Romance)";
+    string filtroString = "c-(#v=10)&(#d=20,80)&(#t=short|tvEpisode)&(#g=Comedy|Drama|Romance)";
+    string filtroString1 = "f-(#a=2017)&(#t=short|tvEpisode)&(#g=Comedy|Drama|Romance)";
 
+    filtro.filtrarFilmeCinema(filtroString1, filmesFiltrados, cinemasFiltrados);
+    
+    cout << "\nFilmes filtrados (" << filmesFiltrados.size() << "):\n";
+    for (const Filme& f : filmesFiltrados) {
+        f.imprime();
+    }
+    
     filtro.filtrarFilmeCinema(filtroString, filmesFiltrados, cinemasFiltrados);
-
-    // cout << "\nFilmes filtrados (" << filmesFiltrados.size() << "):\n";
-    // for (const Filme& f : filmesFiltrados) {
-    //     f.imprime();
-    // }
-
     cout << "\nCinemas filtrados (" << cinemasFiltrados.size() << "):\n";
     for (const Cinema& c : cinemasFiltrados) {
         cout << "Cinema: " << c.nomeCinema << ", Preço ingresso: " << c.precoIngresso << endl;
@@ -50,39 +52,3 @@ int main(){
     
     return 0;
 }
-    
-        
-        // for (const Filme &filme : todosFilmes.filmes)
-        //     cout<<"\t"<<filme.titleType<<endl;
-        
-        // for (const Cinema &cinema : todosCinemas.cinemas){
-        //     cout<<cinema.nomeCinema<<endl;
-        //     for (const Filme &filme : cinema.filmesEmExibicao)
-        //         cout<<"\t"<<filme.titleType<<endl;
-        // }
-        
-        /*TodosFilmes todosFilmes;
-        todosFilmes.CarregaListaFilmes("filmes.txt");
-        TodosCinemas todosCinemas;
-        todosCinemas.criarListaDeCinemasPorArquivo("cinemas.txt", todosFilmes);
-        Filtro filtro(todosFilmes,todosCinemas);
-        string parse = "c-(#g=Action|Drama)&(#v=25)&(#r=10,20,5)";
-    
-        filtro.filtrarFilmeCinema(parse, filtro.listaDeFilme, filtro.listaDeCinema);
-    
-        cout << "\n>>> Resultado do Filtro:\n";
-        for (const Cinema& c : todosCinemas) {
-            cout << "- " << c.nomeCinema << " [R$" << c.precoIngresso << "]\n";
-            for (const Filme& f : c.filmesEmExibicao) {
-                cout << "   > " << f.primaryTitle << " (" << f.startYear << ")\n";
-            }
-        }
-        
-        
-        FiltroFilmes FF;
-        FiltroCinemas FC;
-        vector<string> generos = {"Action","Short"};
-        FF.filtroGenero(todosFilmes.filmes, generos);
-        for(const Filme& f : todosFilmes.filmes){
-            f.imprime();
-        }*/

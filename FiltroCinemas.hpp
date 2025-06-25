@@ -9,71 +9,63 @@ using namespace std;
 class FiltroCinemas
 {
 public:
-    void filtroCinemasPorTipoFilme(vector<Cinema> &cinemas, const vector<string> &tiposDesejados)
+    void filtrarCinemasComFilmeQueAtendeTodosOsFiltros(
+    vector<Cinema>& cinemas,bool usaAno, int anoMin, int anoMax,
+    bool usaDuracao, int durMin, int durMax,bool usaGenero, const vector<string>& generos,
+    bool usaTipo, const vector<string>& tipos) 
     {
         vector<Cinema> filtrados;
 
-        for (const Cinema &cinema : cinemas)
-        {
-            bool contemTipo = false;
-            for (const Filme &f : cinema.filmesEmExibicao)
-            {
-                for (const string &tipoDesejado : tiposDesejados)
-                {
-                    // cout<<f.titleType<<"=="<<tipoDesejado<<endl;
-                    if (f.titleType == tipoDesejado)
-                    {
-                        contemTipo = true;
-                        break;
+        for (const Cinema& cinema : cinemas) {
+            bool contemFilmeValido = false;
+
+            for (const Filme& f : cinema.filmesEmExibicao) {
+                bool passa = true;
+
+                if (usaAno && (f.startYear < anoMin || f.startYear > anoMax)) {
+                    passa = false;
+                }
+
+                if (usaDuracao && (f.runtimeMinutes < durMin || f.runtimeMinutes > durMax)) {
+                    passa = false;
+                }
+
+                if (usaGenero) {
+                    bool encontrouGenero = false;
+                    for (const string& g : generos) {
+                        for (const string& generoFilme : f.genres) {
+                            if (generoFilme == g) {
+                                encontrouGenero = true;
+                                break;
+                            }
+                        }
+                        if (encontrouGenero) break;
+                    }
+                    if (!encontrouGenero) {
+                        passa = false;
                     }
                 }
-                if (contemTipo)
-                    break;
-            }
 
-            if (contemTipo)
-            {
-                filtrados.push_back(cinema);
-            }
-        }
-        // cout<<filtrados.size();
-        cinemas = filtrados;
-        
-    }
-
-    void filtroCinemasPorGeneroFilme(vector<Cinema> &cinemas, const vector<string> &generosBuscados)
-    {
-        vector<Cinema> filtrados;
-        for (const Cinema &cinema : cinemas)
-        {
-            // cout<<"Teste1!!"<<endl;
-            bool contemGenero = false;
-            
-            for (const Filme &f : cinema.filmesEmExibicao)
-            {
-                // cout<<"Teste2!!"<<endl;
-                // Percorre os gêneros do filme
-                for (const string &generoFilme : f.genres)
-                {
-                    for (const string &generoBuscado : generosBuscados)
-                    {
-                        // cout<<generoFilme<<"=="<<generoBuscado<<endl;
-                        if (generoFilme == generoBuscado)
-                        {
-                            contemGenero = true;
+                if (usaTipo) {
+                    bool tipoEncontrado = false;
+                    for (const string& tipo : tipos) {
+                        if (tipo == f.titleType) {
+                            tipoEncontrado = true;
                             break;
                         }
                     }
-                    if (contemGenero)
-                        break;
+                    if (!tipoEncontrado) {
+                        passa = false;
+                    }
                 }
 
-                if (contemGenero)
+                if (passa) {
+                    contemFilmeValido = true;
                     break;
+                }
             }
 
-            if (contemGenero)
-            {
+            if (contemFilmeValido) {
                 filtrados.push_back(cinema);
             }
         }
@@ -81,32 +73,8 @@ public:
         cinemas = filtrados;
     }
 
-    void filtroCinemasPorDuracaoFilme(vector<Cinema> &cinemas, int minDuracao, int maxDuracao)
-    {
-        vector<Cinema> filtrados;
 
-        for (const Cinema &cinema : cinemas)
-        {
-            bool contemDuracaoValida = false;
 
-            for (const Filme &f : cinema.filmesEmExibicao)
-            {
-                if (f.runtimeMinutes >= minDuracao && f.runtimeMinutes <= maxDuracao)
-                {
-                    contemDuracaoValida = true;
-                    break;
-                }
-            }
-
-            if (contemDuracaoValida)
-            {
-                filtrados.push_back(cinema);
-            }
-        }
-
-        cinemas = filtrados;
-        
-    }
 
     void filtroCinemasPorLocalizacao(vector<Cinema> &cinemas, int usuarioX, int usuarioY, float raio)
     {
@@ -138,25 +106,5 @@ public:
 
         cinemas = filtrados;
     }
-    
-    void filtroCinemasPorAnoFilme(vector<Cinema>& cinemas, int anoMin, int anoMax) {
-        vector<Cinema> filtrados;
-
-        for (const Cinema& cinema : cinemas) {
-            bool contemAnoValido = false;
-
-            for (const Filme& f : cinema.filmesEmExibicao) {
-                if (f.startYear >= anoMin && f.startYear <= anoMax) {
-                    contemAnoValido = true;
-                    break;
-                }
-            }
-
-            if (contemAnoValido) {
-                filtrados.push_back(cinema);
-            }
-        }
-
-        cinemas = filtrados;
-    }
 };
+
